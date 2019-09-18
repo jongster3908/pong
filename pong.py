@@ -89,6 +89,7 @@ player_score = 0
 computer_score = 0
 player_match = 0
 computer_match = 0
+points_needed = 11
 
 # loop variables
 play_again = True
@@ -199,13 +200,22 @@ while play_again:
 
         # draw scores
         # player score
-        draw_text('Game Score: %s' % (player_score), default_font, surface, WINDOWWIDTH * 3/4, 50)
-        draw_text('Match Score: %s' % (player_match), default_font, surface, WINDOWWIDTH * 3/4, 100)
+        draw_text('Game Score: %s' % (player_score), default_font, surface, WINDOWWIDTH * 3/4 - 50, 50)
+        draw_text('Match Score: %s' % (player_match), default_font, surface, WINDOWWIDTH * 3/4 - 50, 70)
+        draw_text('Number of points needed: %s' % (points_needed), default_font, surface, WINDOWWIDTH * 3/4 - 50, 90)
         # computer score
-        draw_text('Game Score: %s' % (computer_score), default_font, surface, WINDOWWIDTH / 4, 50)
-        draw_text('Match Score: %s' % (computer_match), default_font, surface, WINDOWWIDTH / 4, 100)
+        draw_text('Game Score: %s' % (computer_score), default_font, surface, WINDOWWIDTH / 4 - 50, 50)
+        draw_text('Match Score: %s' % (computer_match), default_font, surface, WINDOWWIDTH / 4 - 50, 70)
 
         # draw objects onto surface
+        # draw net
+        # net has line length of 10 and a gap of 5
+        starty = 0
+        while starty <= WINDOWHEIGHT:
+            pygame.draw.line(surface, GRAY, (WINDOWWIDTH/2, starty), (WINDOWWIDTH/2, starty + 10))
+            starty += 15
+
+
         # draw vertical paddles
         for p in vpaddles:
             rect = pygame.draw.rect(surface, BLACK, p.get_rect())
@@ -286,11 +296,13 @@ while play_again:
         if player_score >= 11 and (player_score-computer_score) >= 2:
             player_score = 0
             computer_score = 0
+            points_needed = 11
             player_match += 1
             winmatch.play()
         elif computer_score >= 11 and (computer_score-player_score) >= 2:
             player_score = 0
             computer_score = 0
+            points_needed = 11
             computer_match += 1
             losematch.play()
 
@@ -301,6 +313,13 @@ while play_again:
         if computer_match >= 3:
             draw_text('Sorry! Computer won the match!', default_font, surface, WINDOWWIDTH/2 - 100, WINDOWHEIGHT/2 - 100)
             gameover = True
+
+        # calculate points needed
+        if computer_score <= 9:
+            points_needed = 11 - player_score
+        else:
+            points_needed = computer_score + 2 - player_score
+
 
         pygame.display.update()
         clock.tick(40)
@@ -338,6 +357,7 @@ while play_again:
                 computer_score = 0
                 player_match = 0
                 computer_match = 0
+                points_needed = 11
 
                 # ball position
                 # default is middle of screen
